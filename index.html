@@ -2,75 +2,241 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>KalyanComics</title>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf_viewer.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf.min.js"></script>
-
 <style>
-body{margin:0;background:#0f172a;color:#fff;font-family:Arial}
-header{padding:24px;text-align:center;background:linear-gradient(90deg,#6a11cb,#2575fc)}
-h1{margin:0}
-#home{padding:30px}
-.card{width:250px;background:#1e293b;border-radius:14px;overflow:hidden;display:inline-block;margin:12px;cursor:pointer}
-.card img{width:100%;height:330px;object-fit:cover}
-.card h2{text-align:center}
-.card button{width:100%;padding:12px;background:#2563eb;color:#fff;border:none}
-#reader{display:none}
-.top{background:#111827;padding:10px}
-canvas{display:block;margin:16px auto;max-width:95%;height:auto;background:#fff}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+background:#0d1117;
+color:white;
+}
+
+header{
+background:linear-gradient(90deg,#6a11cb,#2575fc);
+padding:25px;
+text-align:center;
+box-shadow:0 0 20px rgba(0,0,0,.5);
+}
+
+header h1{
+font-size:42px;
+letter-spacing:2px;
+animation:glow 2s infinite alternate;
+}
+
+header p{
+margin-top:10px;
+color:#ddd;
+}
+
+@keyframes glow{
+from{
+text-shadow:0 0 10px cyan;
+}
+to{
+text-shadow:0 0 25px white;
+}
+}
+
+.container{
+padding:30px;
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:25px;
+}
+
+.card{
+background:#161b22;
+width:260px;
+border-radius:18px;
+overflow:hidden;
+transition:.3s;
+cursor:pointer;
+box-shadow:0 0 15px rgba(0,0,0,.4);
+}
+
+.card:hover{
+transform:translateY(-10px) scale(1.03);
+box-shadow:0 0 30px #2575fc;
+}
+
+.card img{
+width:100%;
+height:350px;
+object-fit:cover;
+}
+
+.card h2{
+padding:15px;
+text-align:center;
+}
+
+.card button{
+width:100%;
+padding:15px;
+border:none;
+background:#2575fc;
+color:white;
+font-size:18px;
+cursor:pointer;
+transition:.3s;
+}
+
+.card button:hover{
+background:#6a11cb;
+}
+
+#reader{
+display:none;
+height:100vh;
+background:black;
+}
+
+.topbar{
+height:60px;
+background:#161b22;
+display:flex;
+align-items:center;
+padding-left:20px;
+}
+
+.back{
+background:#2575fc;
+padding:10px 20px;
+border:none;
+color:white;
+font-size:16px;
+cursor:pointer;
+border-radius:8px;
+}
+
+.back:hover{
+background:#6a11cb;
+}
+
+iframe{
+width:100%;
+height:calc(100vh - 60px);
+border:none;
+background:white;
+}
+
+footer{
+text-align:center;
+padding:25px;
+color:#888;
+}
+
 </style>
+
 </head>
+
 <body>
 
 <div id="home">
-<header><h1>KalyanComics</h1></header>
+
+<header>
+
+<h1>KalyanComics</h1>
+
+<p>Adventure • Action • Mystery • Fantasy</p>
+
+</header>
+
+<div class="container">
 
 <div class="card">
-<img src="ShadowMan.jpg">
+
+<img src="shadowman.jpg">
+
 <h2>Shadow Man</h2>
-<button onclick="openComic('ShadowMan.pdf')">Read Comic</button>
+
+<button onclick="openComic('ShadowMan.pdf')">
+
+Read Comic
+
+</button>
+
 </div>
+
+<!-- ADD MORE COMICS LIKE THIS
+
+<div class="card">
+
+<img src="comic2.jpg">
+
+<h2>Comic 2</h2>
+
+<button onclick="openComic('Comic2.pdf')">
+
+Read Comic
+
+</button>
+
+</div>
+
+-->
+
+</div>
+
+<footer>
+
+© 2026 KalyanComics
+
+</footer>
 
 </div>
 
 <div id="reader">
-<div class="top">
-<button onclick="backHome()">⬅ Back</button>
+
+<div class="topbar">
+
+<button class="back" onclick="goBack()">
+
+⬅ Back
+
+</button>
+
 </div>
-<div id="pages"></div>
+
+<iframe id="pdfViewer"></iframe>
+
 </div>
 
 <script>
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf.worker.min.js';
 
-async function openComic(file){
- document.getElementById('home').style.display='none';
- document.getElementById('reader').style.display='block';
- const container=document.getElementById('pages');
- container.innerHTML='';
- const pdf=await pdfjsLib.getDocument(file).promise;
+function openComic(file){
 
- for(let i=1;i<=pdf.numPages;i++){
-   const page=await pdf.getPage(i);
-   const viewport=page.getViewport({scale:1.6});
-   const canvas=document.createElement('canvas');
-   const ctx=canvas.getContext('2d');
-   canvas.width=viewport.width;
-   canvas.height=viewport.height;
-   await page.render({canvasContext:ctx,viewport}).promise;
-   container.appendChild(canvas);
- }
- window.scrollTo(0,0);
+document.getElementById("home").style.display="none";
+
+document.getElementById("reader").style.display="block";
+
+document.getElementById("pdfViewer").src=file;
+
+window.scrollTo(0,0);
+
 }
 
-function backHome(){
- document.getElementById('reader').style.display='none';
- document.getElementById('home').style.display='block';
- document.getElementById('pages').innerHTML='';
+function goBack(){
+
+document.getElementById("reader").style.display="none";
+
+document.getElementById("home").style.display="block";
+
+document.getElementById("pdfViewer").src="";
+
 }
+
 </script>
 
 </body>
